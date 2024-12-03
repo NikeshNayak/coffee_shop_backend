@@ -42,7 +42,7 @@ exports.adminLogin = async (req, res, next) => {
 
 exports.changePassword = async (req, res, next) => {
   try {
-    const { id } = req.body;
+    const { id } = req.query;
 
     if (!id) {
       return res.status(422).send({

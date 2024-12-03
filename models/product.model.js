@@ -28,18 +28,10 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
     },
-    isMilkAdded : {
-      type: Boolean,
-      required: true,
-    },
     description: {
       type: String,
       required: true,
     },
-    sizes: {
-      type: [String],
-      required: true,
-    } 
   },
   { timestamps: true, versionKey: false }
 );

@@ -11,18 +11,39 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true); // Allow the origin
+      } else {
+        callback(new Error("Not allowed by CORS")); // Reject the origin
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allow specific methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+  })
+);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 const adminAuth = require('./routes/admin/adminAuth.routes');
 const adminProducts = require('./routes/admin/product.routes');
+const adminUsers = require('./routes/admin/users.routes');
 
 const appAuth = require('./routes/app/auth.routes');
 const appProducts = require('./routes/app/product.routes');
 
 app.use("/admin/auth", adminAuth);
 app.use("/admin/product", adminProducts);
+app.use("/admin/users", adminUsers);
 
 app.use("/app/auth", appAuth);
 app.use("/app/product", appProducts);

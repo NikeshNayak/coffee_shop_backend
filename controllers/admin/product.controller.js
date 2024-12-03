@@ -12,9 +12,7 @@ exports.addProduct = async (req, res, next) => {
       price,
       type,
       subType,
-      isMilkAdded,
       description,
-      sizes,
     } = req.body;
 
     // Extract uploaded image
@@ -30,9 +28,7 @@ exports.addProduct = async (req, res, next) => {
       !price ||
       !type ||
       !subType ||
-      isMilkAdded === undefined ||
-      !description ||
-      !sizes
+      !description
     ) {
       return res.status(422).send({
         code: 422,
@@ -49,9 +45,7 @@ exports.addProduct = async (req, res, next) => {
       price,
       type,
       subType,
-      isMilkAdded,
       description,
-      sizes: sizes.split(","),
     });
 
     return res.status(200).send({
@@ -74,7 +68,7 @@ exports.addProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params; // Product ID from request parameters
-    const { title, subtitle, price, type, subType, isMilkAdded, description, sizes } = req.body;
+    const { title, subtitle, price, type, subType, description } = req.body;
 
     // Check if product exists
     let product = await Product.findById(id);
@@ -97,9 +91,7 @@ exports.updateProduct = async (req, res, next) => {
       ...(price && { price }),
       ...(type && { type }),
       ...(subType && { subType }),
-      ...(isMilkAdded !== undefined && { isMilkAdded }),
       ...(description && { description }),
-      ...(sizes && { sizes: sizes.split(",") }),
     };
 
     // Remove old image if a new one is uploaded
@@ -200,3 +192,37 @@ exports.getProductList = async (req, res, next) => {
     }
   };
   
+
+// Delete Product by ID
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.query;
+
+    // Check if the product exists
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).send({
+        code: 404,
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Delete the product
+    await Product.findByIdAndDelete(id);
+
+    return res.status(200).send({
+      code: 200,
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return res.status(500).send({
+      code: 500,
+      success: false,
+      message: "An error occurred while deleting the product",
+    });
+  }
+};
+
